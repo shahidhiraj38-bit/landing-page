@@ -14,11 +14,9 @@ import {
   Phone,
   Search,
   Sparkles,
-  Target,
-  Users
+  Target
 } from "lucide-react";
-import { FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import FlodeskForm from "../components/FlodeskForm";
 
 const services = [
   {
@@ -70,13 +68,6 @@ const steps = [
 ];
 
 export default function Home() {
-  const router = useRouter();
-
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    router.push("/thank-you");
-  }
-
   return (
     <main className="min-h-screen overflow-hidden">
       <header className="section-shell flex items-center justify-between py-5">
@@ -271,43 +262,7 @@ export default function Home() {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="rounded-md border border-brand-line bg-white p-5 shadow-soft sm:p-7">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-bold text-brand-ink">
-              Name
-              <input className="focus-ring mt-2 h-12 w-full rounded-md border border-brand-line px-4 text-base font-medium text-brand-ink" name="name" required />
-            </label>
-            <label className="text-sm font-bold text-brand-ink">
-              Business name
-              <input className="focus-ring mt-2 h-12 w-full rounded-md border border-brand-line px-4 text-base font-medium text-brand-ink" name="businessName" required />
-            </label>
-          </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <label className="text-sm font-bold text-brand-ink">
-              Email
-              <input className="focus-ring mt-2 h-12 w-full rounded-md border border-brand-line px-4 text-base font-medium text-brand-ink" name="email" type="email" required />
-            </label>
-            <label className="text-sm font-bold text-brand-ink">
-              WhatsApp number
-              <input className="focus-ring mt-2 h-12 w-full rounded-md border border-brand-line px-4 text-base font-medium text-brand-ink" name="whatsapp" type="tel" placeholder="+977 98..." required />
-            </label>
-          </div>
-          <label className="mt-4 block text-sm font-bold text-brand-ink">
-            Website link or Facebook link
-            <input className="focus-ring mt-2 h-12 w-full rounded-md border border-brand-line px-4 text-base font-medium text-brand-ink" name="websiteOrFacebook" type="url" placeholder="https://" />
-          </label>
-          <label className="mt-4 block text-sm font-bold text-brand-ink">
-            What do you want to improve?
-            <textarea className="focus-ring mt-2 min-h-32 w-full resize-y rounded-md border border-brand-line px-4 py-3 text-base font-medium text-brand-ink" name="message" required />
-          </label>
-          <button
-            type="submit"
-            className="focus-ring mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-brand-primary px-6 text-base font-extrabold text-white shadow-glow transition hover:bg-[#0b8581]"
-          >
-            <Users aria-hidden="true" size={18} />
-            Send Request
-          </button>
-        </form>
+        <FlodeskForm />
       </section>
     </main>
   );
