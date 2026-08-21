@@ -13,6 +13,7 @@ export default function FlodeskForm() {
   useEffect(() => {
     const host = containerRef.current;
     if (!host) return;
+    const formHost: HTMLDivElement = host;
 
     let observer: MutationObserver | undefined;
     let redirectTimer: number | undefined;
@@ -24,11 +25,11 @@ export default function FlodeskForm() {
       const response = await fetch("/flodesk-form.html", { cache: "no-store" });
       if (!response.ok) throw new Error("Unable to load the Flodesk form.");
 
-      host.innerHTML = await response.text();
+      formHost.innerHTML = await response.text();
       if (isDisposed) return;
 
-      const root = host.querySelector<HTMLElement>("[data-ff-el='root']");
-      const form = host.querySelector<HTMLFormElement>("[data-ff-el='form']");
+      const root = formHost.querySelector<HTMLElement>("[data-ff-el='root']");
+      const form = formHost.querySelector<HTMLFormElement>("[data-ff-el='form']");
       if (!root || !form) throw new Error("Flodesk form markup is incomplete.");
 
       const scheduleRedirectAfterSuccess = () => {
@@ -52,7 +53,7 @@ export default function FlodeskForm() {
         subtree: true,
       });
 
-      for (const script of Array.from(host.querySelectorAll("script"))) {
+      for (const script of Array.from(formHost.querySelectorAll("script"))) {
         const liveScript = document.createElement("script");
         for (const attribute of Array.from(script.attributes)) {
           liveScript.setAttribute(attribute.name, attribute.value);
