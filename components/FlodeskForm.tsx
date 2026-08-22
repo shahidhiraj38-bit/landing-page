@@ -4,15 +4,13 @@ import { useEffect, useRef, useState } from "react";
 
 export default function FlodeskForm() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const host = containerRef.current;
-if (!host) return;
+    const formHost = containerRef.current;
+    if (!formHost) return;
 
-const formHost: HTMLDivElement = host;
-
-    let disposed = false;
+    let cancelled = false;
 
     async function loadForm() {
       try {
@@ -24,24 +22,74 @@ const formHost: HTMLDivElement = host;
           throw new Error("Unable to load the consultation form.");
         }
 
-        formHost.innerHTML = await response.text();
+        const html = await response.text();
 
-        if (disposed) return;
+        if (cancelled) return;
 
-        // Run Flodesk's original scripts.
-        for (const oldScript of Array.from(formHost.querySelectorAll("script"))) {
-          const script = document.createElement("script");
+        formHost.innerHTML = html;
 
-          for (const attribute of Array.from(oldScript.attributes)) {
-            script.setAttribute(attribute.name, attribute.value);
-          }
-
-          script.textContent = oldScript.textContent;
-          oldScript.replaceWith(script);
+        // Use our reliable Vercel submission route.
+        for (const script of Array.from(formHost.querySelectorAll("script"))) {
+          script.remove();
         }
-      } catch {
-        if (!disposed) {
-          setError("The form could not load. Please refresh the page and try again.");
+
+        const form = formHost.querySelector<HTMLFormElement>(
+          "[data-ff-el='form']",
+        );
+
+        if (!form) {
+          throw new Error("The form markup is incomplete.");
+        }
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+
+          const button = form.querySelector<HTMLButtonElement>(
+            "button[type='submit']",
+          );
+
+          setMessage("Sending your request…");
+          if (button) button.disabled = true;
+
+          try {
+            const result = await fetch("/api/consultation", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+              },
+              body: new URLSearchParams(
+                Array.from(new FormData(form).entries()).filter(
+                  (entry): entry is [string, string] =>
+                    typeof entry[1] === "string",
+                ),
+              ),
+            });
+
+            if (!result.ok) {
+              const data = await result.json().catch(() => null);
+              throw new Error(
+                data?.error || "Your request could not be submitted.",
+              );
+            }
+
+            window.location.assign("/thank-you");
+          } catch (error) {
+            setMessage(
+              error instanceof Error
+                ? error.message
+                : "The form could not be sent. Please try again.",
+            );
+
+            if (button) button.disabled = false;
+          }
+        });
+      } catch (error) {
+        if (!cancelled) {
+          setMessage(
+            error instanceof Error
+              ? error.message
+              : "The form could not be loaded.",
+          );
         }
       }
     }
@@ -49,20 +97,17 @@ const formHost: HTMLDivElement = host;
     loadForm();
 
     return () => {
-      disposed = true;
+      cancelled = true;
     };
   }, []);
 
-  if (error) {
-    return (
-      <div className="rounded-md border border-red-200 bg-red-50 p-5 text-center text-sm text-red-700">
-        {error}
-      </div>
-    );
-  }
-
   return (
     <div className="rounded-md border border-brand-line bg-white p-3 shadow-soft sm:p-5">
+      {message && (
+        <p className="mb-4 text-center text-sm font-semibold text-brand-muted">
+          {message}
+        </p>
+      )}
       <div ref={containerRef} />
     </div>
   );
