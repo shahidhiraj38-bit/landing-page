@@ -8,7 +8,9 @@ export default function FlodeskForm() {
 
   useEffect(() => {
     const host = containerRef.current;
-    if (!host) return;
+if (!host) return;
+
+const formHost: HTMLDivElement = host;
 
     let disposed = false;
 
@@ -22,12 +24,12 @@ export default function FlodeskForm() {
           throw new Error("Unable to load the consultation form.");
         }
 
-        host.innerHTML = await response.text();
+        formHost.innerHTML = await response.text();
 
         if (disposed) return;
 
         // Run Flodesk's original scripts.
-        for (const oldScript of Array.from(host.querySelectorAll("script"))) {
+        for (const oldScript of Array.from(formHost.querySelectorAll("script"))) {
           const script = document.createElement("script");
 
           for (const attribute of Array.from(oldScript.attributes)) {
