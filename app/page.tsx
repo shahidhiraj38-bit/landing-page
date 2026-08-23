@@ -13,8 +13,7 @@ import {
   MessageCircle,
   Phone,
   Search,
-  Sparkles,
-  Target
+  Sparkles
 } from "lucide-react";
 import FlodeskForm from "../components/FlodeskForm";
 
@@ -125,42 +124,15 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="relative">
-          <div className="rounded-md border border-brand-line bg-white p-5 shadow-soft">
-            <div className="flex items-center justify-between border-b border-brand-line pb-4">
-              <div>
-                <p className="text-sm font-bold text-brand-primary">Growth Snapshot</p>
-                <p className="mt-1 text-2xl font-extrabold text-brand-ink">AI marketing readiness</p>
-              </div>
-              <div className="flex h-12 w-12 items-center justify-center rounded-md bg-brand-primary text-white">
-                <Target aria-hidden="true" size={24} />
-              </div>
-            </div>
-            <div className="mt-5 space-y-4">
-              {[
-                ["Offer clarity", "78%"],
-                ["Lead generation", "64%"],
-                ["Follow-up speed", "41%"],
-                ["Content consistency", "58%"]
-              ].map(([label, value]) => (
-                <div key={label}>
-                  <div className="mb-2 flex items-center justify-between text-sm font-semibold">
-                    <span className="text-brand-ink">{label}</span>
-                    <span className="text-brand-muted">{value}</span>
-                  </div>
-                  <div className="h-2.5 rounded-full bg-[#eaf1ef]">
-                    <div className="h-2.5 rounded-full bg-brand-secondary" style={{ width: value }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-6 rounded-md bg-[#f5faf8] p-4">
-              <p className="text-sm font-bold text-brand-ink">Recommended next move</p>
-              <p className="mt-2 text-sm leading-6 text-brand-muted">
-                Build one focused campaign with stronger follow-up automation before expanding ad spend.
-              </p>
-            </div>
-          </div>
+        <div className="relative overflow-hidden rounded-md border border-brand-line bg-white shadow-soft">
+          <Image
+            src="/consultation-expert.png"
+            alt="Digital marketing consultant at work"
+            width={1152}
+            height={1536}
+            className="h-[480px] w-full object-cover object-[center_20%] sm:h-[560px]"
+            priority
+          />
         </div>
       </section>
 
