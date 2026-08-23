@@ -27,7 +27,9 @@ export default function FlodeskForm() {
   }, []);
 
   return (
-    <div className="rounded-md border border-brand-line bg-white p-3 shadow-soft sm:p-5">
+    <div className="rounded-md border border-brand-line bg-white p-3 shadow-soft sm:p-5"><h2 className="mb-6 text-center text-3xl font-extrabold tracking-tight text-black sm:text-4xl">
+  Book Your Consultation
+</h2>
       {error && <p className="mb-3 text-center text-red-700">{error}</p>}
       <div ref={containerRef} />
     </div>
