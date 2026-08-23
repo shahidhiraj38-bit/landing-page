@@ -4,110 +4,31 @@ import { useEffect, useRef, useState } from "react";
 
 export default function FlodeskForm() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
-   const formHost = containerRef.current!;
-    if (!formHost) return;
+    const host = containerRef.current;
+    if (!host) return;
 
-    let cancelled = false;
+    const formHost: HTMLDivElement = host;
 
-    async function loadForm() {
-      try {
-        const response = await fetch("/flodesk-form.html", {
-          cache: "no-store",
-        });
-
-        if (!response.ok) {
-          throw new Error("Unable to load the consultation form.");
-        }
-
-        const html = await response.text();
-
-        if (cancelled) return;
-
+    fetch("/flodesk-form.html")
+      .then((response) => {
+        if (!response.ok) throw new Error("Could not load the form.");
+        return response.text();
+      })
+      .then((html) => {
         formHost.innerHTML = html;
 
-        // Use our reliable Vercel submission route.
-        for (const script of Array.from(formHost.querySelectorAll("script"))) {
-          script.remove();
-        }
-
-        const form = formHost.querySelector<HTMLFormElement>(
-          "[data-ff-el='form']",
-        );
-
-        if (!form) {
-          throw new Error("The form markup is incomplete.");
-        }
-
-        form.addEventListener("submit", async (event) => {
-          event.preventDefault();
-
-          const button = form.querySelector<HTMLButtonElement>(
-            "button[type='submit']",
-          );
-
-          setMessage("Sending your request…");
-          if (button) button.disabled = true;
-
-          try {
-            const result = await fetch("/api/consultation", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-              },
-              body: new URLSearchParams(
-                Array.from(new FormData(form).entries()).filter(
-                  (entry): entry is [string, string] =>
-                    typeof entry[1] === "string",
-                ),
-              ),
-            });
-
-            if (!result.ok) {
-              const data = await result.json().catch(() => null);
-              throw new Error(
-                data?.error || "Your request could not be submitted.",
-              );
-            }
-
-            window.location.assign("/thank-you");
-          } catch (error) {
-            setMessage(
-              error instanceof Error
-                ? error.message
-                : "The form could not be sent. Please try again.",
-            );
-
-            if (button) button.disabled = false;
-          }
-        });
-      } catch (error) {
-        if (!cancelled) {
-          setMessage(
-            error instanceof Error
-              ? error.message
-              : "The form could not be loaded.",
-          );
-        }
-      }
-    }
-
-    loadForm();
-
-    return () => {
-      cancelled = true;
-    };
+        // Submit normally and directly to Flodesk.
+        formHost.querySelectorAll("script").forEach((script) => script.remove());
+      })
+      .catch(() => setError("Could not load the form. Please refresh the page."));
   }, []);
 
   return (
     <div className="rounded-md border border-brand-line bg-white p-3 shadow-soft sm:p-5">
-      {message && (
-        <p className="mb-4 text-center text-sm font-semibold text-brand-muted">
-          {message}
-        </p>
-      )}
+      {error && <p className="mb-3 text-center text-red-700">{error}</p>}
       <div ref={containerRef} />
     </div>
   );
