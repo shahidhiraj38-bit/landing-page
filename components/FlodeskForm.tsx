@@ -7,7 +7,7 @@ export default function FlodeskForm() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    const formHost = ref.current!;
+   const formHost = containerRef.current!;
     if (!formHost) return;
 
     let cancelled = false;
