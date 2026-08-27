@@ -2,36 +2,91 @@
 
 import { useEffect, useRef, useState } from "react";
 
+const SUCCESS_DELAY_MS = 1800;
+
+/** Loads the live Flodesk embed without intercepting its native submission flow. */
 export default function FlodeskForm() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [error, setError] = useState("");
+  const [hasLoadError, setHasLoadError] = useState(false);
 
   useEffect(() => {
     const host = containerRef.current;
     if (!host) return;
 
-    const formHost: HTMLDivElement = host;
+    let observer: MutationObserver | undefined;
+    let redirectTimer: number | undefined;
+    let disposed = false;
+    let redirectScheduled = false;
 
-    fetch("/flodesk-form.html")
-      .then((response) => {
-        if (!response.ok) throw new Error("Could not load the form.");
-        return response.text();
-      })
-      .then((html) => {
-        formHost.innerHTML = html;
+    const scheduleThankYouRedirect = () => {
+      if (redirectScheduled) return;
+      redirectScheduled = true;
 
-        // Submit normally and directly to Flodesk.
-        formHost.querySelectorAll("script").forEach((script) => script.remove());
-      })
-      .catch(() => setError("Could not load the form. Please refresh the page."));
+      // Flodesk has already confirmed the subscriber at this point. The short
+      // delay leaves its native success and automation work undisturbed.
+      redirectTimer = window.setTimeout(() => {
+        window.location.assign("/thanks");
+      }, SUCCESS_DELAY_MS);
+    };
+
+    const loadForm = async () => {
+      try {
+        const response = await fetch("/flodesk-form.html", { cache: "no-store" });
+        if (!response.ok) throw new Error("Unable to load the Flodesk form.");
+
+        host.innerHTML = await response.text();
+        if (disposed) return;
+
+        const root = host.querySelector<HTMLElement>("[data-ff-el='root']");
+        if (!root) throw new Error("Flodesk form markup is incomplete.");
+
+        observer = new MutationObserver(() => {
+          if (root.dataset.ffStage === "success" || root.classList.contains("fd-has-success")) {
+            scheduleThankYouRedirect();
+          }
+        });
+        observer.observe(root, {
+          attributes: true,
+          attributeFilter: ["class", "data-ff-stage"],
+          subtree: true,
+        });
+
+        // Scripts inserted through innerHTML do not run. Appending equivalent
+        // scripts to the document head runs Flodesk's supplied loader and handler.
+        for (const script of Array.from(host.querySelectorAll("script"))) {
+          const executableScript = document.createElement("script");
+          for (const attribute of Array.from(script.attributes)) {
+            executableScript.setAttribute(attribute.name, attribute.value);
+          }
+          executableScript.textContent = script.textContent;
+          script.remove();
+          document.head.appendChild(executableScript);
+        }
+      } catch {
+        if (!disposed) setHasLoadError(true);
+      }
+    };
+
+    loadForm();
+
+    return () => {
+      disposed = true;
+      observer?.disconnect();
+      if (redirectTimer) window.clearTimeout(redirectTimer);
+    };
   }, []);
 
+  if (hasLoadError) {
+    return (
+      <div className="rounded-md border border-red-200 bg-red-50 p-5 text-center text-sm font-semibold text-red-700" role="alert">
+        The consultation form could not be loaded. Please refresh the page and try again.
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-md border border-brand-line bg-white p-3 shadow-soft sm:p-5"><h2 className="mb-6 text-center text-3xl font-extrabold tracking-tight text-black sm:text-4xl">
-  Book Your Consultation
-</h2>
-      {error && <p className="mb-3 text-center text-red-700">{error}</p>}
-      <div ref={containerRef} />
+    <div className="overflow-hidden rounded-lg border border-brand-line bg-white shadow-soft">
+      <div ref={containerRef} aria-label="Consultation request form" />
     </div>
   );
 }
