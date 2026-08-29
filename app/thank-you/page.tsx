@@ -36,20 +36,26 @@ export default function ThankYouPage() {
 
           <section className="mt-8 rounded-lg border border-brand-line bg-white p-7 shadow-sm sm:p-10">
             <h2 className="text-2xl font-extrabold text-brand-ink sm:text-3xl">Watch This Video Before Your Consultation</h2>
-            <div className="mt-6 flex aspect-video items-center justify-center rounded-md bg-brand-ink px-6 text-center text-white">
+            <a
+              href="https://youtube.com/shorts/_WJ876eIbFo?si=7f8kL46OvxppFcid"
+              target="_blank"
+              rel="noreferrer"
+              className="focus-ring mt-6 flex aspect-video items-center justify-center rounded-md bg-brand-ink px-6 text-center text-white transition hover:bg-[#143431]"
+              aria-label="Watch the consultation video on YouTube"
+            >
               <div>
                 <PlayCircle className="mx-auto text-brand-secondary" aria-hidden="true" size={48} />
                 <p className="mt-4 text-lg font-extrabold">Watch the Video</p>
-                <p className="mt-2 text-sm text-white/70">Video will be added here.</p>
+                <p className="mt-2 text-sm text-white/70">Opens the video on YouTube.</p>
               </div>
-            </div>
+            </a>
             <p className="mt-5 text-center font-bold text-brand-ink">Please watch the video before your consultation.</p>
           </section>
 
           <section className="mt-8 rounded-lg bg-brand-ink p-7 text-center text-white shadow-soft sm:p-10">
             <h2 className="text-2xl font-extrabold sm:text-3xl">Have a Question? WhatsApp Me Directly</h2>
             <p className="mx-auto mt-4 max-w-2xl leading-7 text-white/75">If you have a question about your business, marketing, or the consultation, you can contact me directly on WhatsApp.</p>
-            <a href="https://wa.me/9779851137809" className="focus-ring mt-7 inline-flex h-12 items-center gap-2 rounded-md bg-brand-primary px-6 font-extrabold text-white transition hover:bg-[#0b8581]">
+            <a href="https://wa.me/9779851137809" target="_blank" rel="noreferrer" className="focus-ring mt-7 inline-flex h-12 items-center gap-2 rounded-md bg-brand-primary px-6 font-extrabold text-white transition hover:bg-[#0b8581]">
               <MessageCircle aria-hidden="true" size={19} />
               WhatsApp Me Now
             </a>
@@ -72,7 +78,7 @@ export default function ThankYouPage() {
           <section className="mt-10 text-center">
             <h2 className="text-2xl font-extrabold text-brand-ink sm:text-3xl">Ready to Get More From Your Marketing?</h2>
             <p className="mt-3 leading-7 text-brand-muted">Watch the video now, then message me on WhatsApp if you have any questions.</p>
-            <a href="https://wa.me/9779851137809" className="focus-ring mt-6 inline-flex h-12 items-center gap-2 rounded-md bg-brand-primary px-6 font-extrabold text-white shadow-glow transition hover:bg-[#0b8581]">
+            <a href="https://wa.me/9779851137809" target="_blank" rel="noreferrer" className="focus-ring mt-6 inline-flex h-12 items-center gap-2 rounded-md bg-brand-primary px-6 font-extrabold text-white shadow-glow transition hover:bg-[#0b8581]">
               <MessageCircle aria-hidden="true" size={19} />
               WhatsApp Me Now
             </a>
