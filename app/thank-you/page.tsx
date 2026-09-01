@@ -37,7 +37,7 @@ export default function ThankYouPage() {
           <section className="mt-8 rounded-lg border border-brand-line bg-white p-7 shadow-sm sm:p-10">
             <h2 className="text-2xl font-extrabold text-brand-ink sm:text-3xl">Watch This Video Before Your Consultation</h2>
             <a
-              href="https://youtube.com/shorts/_WJ876eIbFo?si=7f8kL46OvxppFcid"
+              href="https://youtube.com/shorts/rUF-rETRJdc?si=OwsstfIsDqOnbgTa"
               target="_blank"
               rel="noreferrer"
               className="focus-ring mt-6 flex aspect-video items-center justify-center rounded-md bg-brand-ink px-6 text-center text-white transition hover:bg-[#143431]"
